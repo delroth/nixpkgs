@@ -208,6 +208,18 @@ in
         CapabilityBoundingSet = "CAP_NET_BIND_SERVICE";
         ExecStart = "${pkgs.stubby}/bin/stubby -C ${confFile} ${optionalString cfg.debugLogging "-l"}";
         DynamicUser = true;
+
+        # Hardening
+        MemoryDenyWriteExecute = true;
+        PrivateDevices = true;
+        ProtectControlGroups = true;
+        ProtectHome = true;
+        ProtectKernelModules = true;
+        ProtectKernelTunables = true;
+        ProtectSystem = "strict";
+        RestrictRealtime = true;
+        RestrictNamespaces = true;
+        SystemCallFilter = "@system-service";
       };
     };
   };
