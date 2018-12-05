@@ -34,6 +34,18 @@ in
           -c ${toString cfg.torControlPort} \
           ${concatStringsSep " \\\n  " cfg.extraFlags}
       '';
+
+      # Hardening
+      MemoryDenyWriteExecute = true;
+      PrivateDevices = true;
+      ProtectControlGroups = true;
+      ProtectHome = true;
+      ProtectKernelModules = true;
+      ProtectKernelTunables = true;
+      ProtectSystem = "strict";
+      RestrictRealtime = true;
+      RestrictNamespaces = true;
+      SystemCallFilter = "@system-service";
     };
 
     # CPython requires a process to either have $HOME defined or run as a UID
