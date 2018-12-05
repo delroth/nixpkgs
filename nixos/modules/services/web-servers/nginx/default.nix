@@ -361,7 +361,7 @@ in
           chown -R ${cfg.user}:${cfg.group} ${cfg.stateDir}
         '';
         description = "
-          Shell commands executed before the service's nginx is started.
+          Shell commands executed as root before the service's nginx is started.
         ";
       };
 
@@ -644,17 +644,30 @@ in
       }
     ];
 
+    security.wrappers.nginx = {
+      source = "${cfg.package}/bin/nginx";
+      capabilities = "cap_net_bind_service+eip";
+      owner = cfg.user;
+      group = cfg.group;
+      permissions = "u+rx";
+    };
+
     systemd.services.nginx = {
       description = "Nginx Web Server";
       after = [ "network.target" ];
       wantedBy = [ "multi-user.target" ];
       stopIfChanged = false;
-      preStart =
-        ''
+      preStart = ''
         ${cfg.preStart}
-        ${cfg.package}/bin/nginx -c ${configPath} -p ${cfg.stateDir} -t
-        '';
+        ${pkgs.su-exec}/bin/su-exec ${cfg.user}:${cfg.group} /run/wrappers/bin/nginx -c ${configPath} -p ${cfg.stateDir} -t
+      '';
       serviceConfig = {
+        User = cfg.user;
+        Group = cfg.group;
+        AmbientCapabilities = "CAP_NET_BIND_SERVICE";
+        CapabilityBoundingSet = "CAP_NET_BIND_SERVICE";
+        PermissionsStartOnly = true;
+
         ExecStart = "${cfg.package}/bin/nginx -c ${configPath} -p ${cfg.stateDir}";
         ExecReload = "${pkgs.coreutils}/bin/kill -HUP $MAINPID";
         Restart = "always";
