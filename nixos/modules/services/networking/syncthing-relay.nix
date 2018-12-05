@@ -113,6 +113,18 @@ in {
         DynamicUser = true;
         StateDirectory = baseNameOf dataDirectory;
 
+        # Hardening
+        MemoryDenyWriteExecute = true;
+        PrivateDevices = true;
+        ProtectControlGroups = true;
+        ProtectHome = true;
+        ProtectKernelModules = true;
+        ProtectKernelTunables = true;
+        ProtectSystem = "strict";
+        RestrictRealtime = true;
+        RestrictNamespaces = true;
+        SystemCallFilter = "@system-service";
+
         Restart = "on-failure";
         ExecStart = "${pkgs.syncthing-relay}/bin/strelaysrv ${concatStringsSep " " relayOptions}";
       };
