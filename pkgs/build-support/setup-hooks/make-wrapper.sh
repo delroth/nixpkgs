@@ -142,7 +142,11 @@ wrapProgram() {
 
     assertExecutable "$prog"
 
-    hidden="$(dirname "$prog")/.$(basename "$prog")"-wrapped
+    hiddenDir="$(dirname "$prog")/.wrapped"
+    if ! [ -d "$hiddenDir" ]; then
+      mkdir "$hiddenDir"
+    fi
+    hidden="$hiddenDir/$(basename "$prog")"
     while [ -e "$hidden" ]; do
       hidden="${hidden}_"
     done
