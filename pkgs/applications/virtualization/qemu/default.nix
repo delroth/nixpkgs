@@ -78,6 +78,11 @@ stdenv.mkDerivation rec {
     ./no-etc-install.patch
     ./fix-qemu-ga.patch
     ./9p-ignore-noatime.patch
+    (fetchpatch {
+      name = "CVE-2019-13164.patch";
+      url = "https://git.qemu.org/?p=qemu.git;a=patch;h=6f5d8671225dc77190647f18a27a0d156d4ca97a";
+      sha256 = "1mwaxl7d61rdhdh8y36kvqmjk0hi8v52rhlmbddja00zhla3xzar";
+    })
   ] ++ optional nixosTestRunner ./force-uid0-on-9p.patch
     ++ optionals stdenv.hostPlatform.isMusl [
     (fetchpatch {
