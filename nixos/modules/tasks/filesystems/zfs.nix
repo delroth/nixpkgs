@@ -487,7 +487,7 @@ in
       systemd.targets.zfs.wantedBy = [ "multi-user.target" ];
     })
 
-    (mkIf enableAutoSnapshots {
+    (mkIf (enableZfs && enableAutoSnapshots) {
       systemd.services = let
                            descr = name: if name == "frequent" then "15 mins"
                                     else if name == "hourly" then "hour"
@@ -525,7 +525,7 @@ in
                             }) snapshotNames);
     })
 
-    (mkIf enableAutoScrub {
+    (mkIf (enableZfs && enableAutoScrub) {
       systemd.services.zfs-scrub = {
         description = "ZFS pools scrubbing";
         after = [ "zfs-import.target" ];
@@ -552,7 +552,7 @@ in
       };
     })
 
-    (mkIf cfgTrim.enable {
+    (mkIf (enableZfs && cfgTrim.enable) {
       systemd.services.zpool-trim = {
         description = "ZFS pools trim";
         after = [ "zfs-import.target" ];
